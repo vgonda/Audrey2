@@ -18,7 +18,8 @@ object Audrey2Workflow : StatefulWorkflow<Unit, State, Nothing, Rendering>() {
     val message: String,
     // A percentage representing hunger.
     val hunger: Float,
-    val onClick: () -> Unit
+    val onFeedPlant: () -> Unit,
+    val onWithholdPlantFood: () -> Unit,
   )
 
   private val feedAction = action {
@@ -32,7 +33,7 @@ object Audrey2Workflow : StatefulWorkflow<Unit, State, Nothing, Rendering>() {
   override fun initialState(
     props: Unit,
     snapshot: Snapshot?
-  ): State = snapshot?.bytes?.parse { source -> State(source.readInt()) } ?: State(0)
+  ): State = snapshot?.bytes?.parse { source -> State(source.readInt()) } ?: State(50)
 
   override fun render(
     renderProps: Unit,
@@ -41,8 +42,9 @@ object Audrey2Workflow : StatefulWorkflow<Unit, State, Nothing, Rendering>() {
   ): Rendering {
     return Rendering(
       message = "Feed me, Seymour!",
-      hunger = (renderState.amountFed/100f).coerceAtMost(1f),
-      onClick = { context.actionSink.send(feedAction) }
+      hunger = (renderState.amountFed/100f).coerceAtMost(1f).coerceAtLeast(0f),
+      onFeedPlant = { context.actionSink.send(feedAction) },
+      onWithholdPlantFood = { context.actionSink.send(dontFeedAction) }
     )
   }
 

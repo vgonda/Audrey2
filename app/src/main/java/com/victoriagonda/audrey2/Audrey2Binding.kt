@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -32,15 +34,25 @@ val Audrey2Binding = composeViewFactory { rendering: Rendering, environment: Vie
     Spacer(modifier = Modifier.height(24.dp))
     Button(
       modifier = Modifier.align(CenterHorizontally),
-      onClick = rendering.onClick
+      onClick = rendering.onFeedPlant
     ) {
-      Text(text = "Feed me.")
+      Text(text = "Feed me")
+    }
+
+    Spacer(modifier = Modifier.height(24.dp))
+    Button(
+      modifier = Modifier.align(CenterHorizontally),
+      onClick = rendering.onWithholdPlantFood,
+      colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary)
+    ) {
+      Text(text = "Don't feed the plant")
     }
 
     Spacer(modifier = Modifier.height(24.dp))
 
     LinearProgressIndicator(
       progress = rendering.hunger,
+      color = if (rendering.hunger >= 0.5f) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
       modifier = Modifier.align(CenterHorizontally),
     )
   }
