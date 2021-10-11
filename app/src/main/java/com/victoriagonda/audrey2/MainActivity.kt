@@ -17,7 +17,7 @@ import com.victoriagonda.audrey2.ui.theme.Audrey2Theme
 import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(WorkflowUiExperimentalApi::class)
-private val viewRegistry = ViewRegistry(Audrey2Binding)
+private val viewRegistry = ViewRegistry(Audrey2Binding, EndGameBinding)
 
 @OptIn(WorkflowUiExperimentalApi::class)
 private val viewEnvironment =

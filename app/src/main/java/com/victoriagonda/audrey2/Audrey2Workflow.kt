@@ -4,12 +4,15 @@ import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.action
 import com.squareup.workflow1.parse
+import com.victoriagonda.audrey2.Audrey2Workflow.GameOutput
 import com.victoriagonda.audrey2.Audrey2Workflow.Rendering
 import com.victoriagonda.audrey2.Audrey2Workflow.State
 
-object Audrey2Workflow : StatefulWorkflow<Unit, State, Nothing, Rendering>() {
-  data class State(val amountFed: Int) {
+object Audrey2Workflow : StatefulWorkflow<Unit, State, GameOutput, Rendering>() {
 
+  object GameOutput
+
+  data class State(val amountFed: Int) {
     fun increment(): State = State(amountFed + 1)
     fun decrement(): State = State(amountFed - 1)
   }
@@ -30,6 +33,10 @@ object Audrey2Workflow : StatefulWorkflow<Unit, State, Nothing, Rendering>() {
     state = state.decrement()
   }
 
+  private val endGameAction = action {
+    setOutput(GameOutput)
+  }
+
   override fun initialState(
     props: Unit,
     snapshot: Snapshot?
@@ -44,7 +51,10 @@ object Audrey2Workflow : StatefulWorkflow<Unit, State, Nothing, Rendering>() {
       message = "Feed me, Seymour!",
       hunger = (renderState.amountFed/100f).coerceAtMost(1f).coerceAtLeast(0f),
       onFeedPlant = { context.actionSink.send(feedAction) },
-      onWithholdPlantFood = { context.actionSink.send(dontFeedAction) }
+      onWithholdPlantFood = {
+        context.actionSink.send(endGameAction)
+        // context.actionSink.send(dontFeedAction)
+      }
     )
   }
 

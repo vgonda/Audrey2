@@ -3,23 +3,39 @@ package com.victoriagonda.audrey2
 import com.squareup.workflow1.Snapshot
 import com.squareup.workflow1.StatefulWorkflow
 import com.squareup.workflow1.action
+import com.victoriagonda.audrey2.EndGameWorkflow.EndGameProps
+import com.victoriagonda.audrey2.EndGameWorkflow.EndGameRendering
+import com.victoriagonda.audrey2.RootWorkflow.State
+import com.victoriagonda.audrey2.RootWorkflow.State.Audrey2
+import com.victoriagonda.audrey2.RootWorkflow.State.GameEnd
 
-object RootWorkflow : StatefulWorkflow<Unit, Unit, Nothing, Any>() {
+object RootWorkflow : StatefulWorkflow<Unit, State, Nothing, Any>() {
 
-  private val dumbyAction = action { }
-
-  override fun initialState(props: Unit, snapshot: Snapshot?) {
-    return Unit
+  sealed class State {
+    object Audrey2 : State()
+    object GameEnd : State()
   }
 
-  override fun render(renderProps: Unit, renderState: Unit, context: RenderContext): Any {
-    val twoeyScreen = context.renderChild(Audrey2Workflow, renderProps) { output ->
-      dumbyAction
+  val endGameAction = action {
+    state = GameEnd
+  }
+
+  override fun initialState(props: Unit, snapshot: Snapshot?): State {
+    return Audrey2
+  }
+
+  override fun render(renderProps: Unit, renderState: State, context: RenderContext): Any {
+    return when (renderState) {
+      is Audrey2 -> context.renderChild(Audrey2Workflow, renderProps) { output ->
+        endGameAction
+      }
+      is GameEnd -> context.renderChild(EndGameWorkflow, EndGameProps("you lost")) { output ->
+        action {}
+      }
     }
-    return twoeyScreen
   }
 
-  override fun snapshotState(state: Unit): Snapshot? {
+  override fun snapshotState(state: State): Snapshot? {
     return null
   }
 }
