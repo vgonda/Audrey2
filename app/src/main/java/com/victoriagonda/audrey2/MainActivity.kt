@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     @OptIn(WorkflowUiExperimentalApi::class)
     val renderings: StateFlow<Any> by lazy {
       renderWorkflowIn(
-        workflow = Audrey2Workflow,
+        workflow = RootWorkflow,
         scope = viewModelScope,
         savedStateHandle = savedState
       )
